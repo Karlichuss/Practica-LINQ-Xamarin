@@ -3,8 +3,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Practica_LINQ_Xamarin.Vistas.MainView">
     <ContentPage.Content>
-        <StackLayout>
-            <Label Text="Welcome to Xamarin Forms!" />
+        <StackLayout  Orientation="Vertical" Padding="10, 10">
+            <Label Text="Nombre" />
+            <Entry x:Name="txtNombre"/>
+            <Label Text="Edad"/>
+            <Entry x:Name="txtEdad" Keyboard="Numeric"/>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <Button x:Name="btnWhere" Text="Where" HorizontalOptions="FillAndExpand"/>
+                <Button x:Name="btnFirstOrDefault" Text="FirstOrDefault" HorizontalOptions="FillAndExpand"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <Button x:Name="btnSingleOrDefault" Text="SingleOrDefault" HorizontalOptions="FillAndExpand"/>
+                <Button x:Name="btnLastOrDefault" Text="LastOrDefault" HorizontalOptions="FillAndExpand"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <Button x:Name="btnOrderBy" Text="OrderBy" HorizontalOptions="FillAndExpand"/>
+                <Button x:Name="btnOrderByDescending" Text="OrderByDescending" HorizontalOptions="FillAndExpand"/>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <Button x:Name="btnSkipWhile" Text="SkipWhile" HorizontalOptions="FillAndExpand"/>
+                <Button x:Name="btnTakeWhile" Text="TakeWhile" HorizontalOptions="FillAndExpand"/>
+            </StackLayout>
+            <ListView
+                x:Name="lstContactos"
+                HorizontalOptions="CenterAndExpand"
+                VerticalOptions="StartAndExpand">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                    <ColumnDefinition Width="1*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Text="{Binding Nombre}" HorizontalOptions="Start"/>
+                                <Label Grid.Column="1" Text="{Binding Edad}" HorizontalOptions="Center"/>
+                                <Label Grid.Column="2" Text="{Binding Dni}" HorizontalOptions="End"/>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>
