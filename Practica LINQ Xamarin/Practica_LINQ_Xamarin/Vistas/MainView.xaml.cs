@@ -36,6 +36,7 @@ namespace Practica_LINQ_Xamarin.Vistas
 
             #region Eventos
 
+            /// BOTONES - Por cada boton, hacemos una llamada al metodo correspondiente que sera un sistema de busqueda diferente cada uno.
             btnWhere.Clicked += (sender, args) =>
             {
                 BuscarWhere();
@@ -78,7 +79,6 @@ namespace Practica_LINQ_Xamarin.Vistas
 
             #endregion Eventos
 
-
         }
 
 
@@ -120,18 +120,23 @@ namespace Practica_LINQ_Xamarin.Vistas
         #region Utilidades
 
         /// <summary>
-        ///  Muestra al usuario información sobre un error que él esta cometiendo
+        /// Muestra al usuario información sobre un error que él esta cometiendo
         /// </summary>
-        /// <param name="mensaje"></param>
+        /// <param name="mensaje">El mensaje a mostrar. Son detalles del error cometido.</param>
         void LanzarAdvertencia(String mensaje)
         {
             DisplayAlert("ERROR", mensaje, "OK");
         }
 
+        /// <summary>
+        /// Muestra el contenido del List introducido por parametro en el ListView
+        /// </summary>
+        /// <param name="contactosMostrar">La coleccion a mostrar</param>
         void mostrarResultados(List<Contacto> contactosMostrar)
         {
             if (contactosMostrar.Count == 0)
             {
+                lstContactos.ItemsSource = null;
                 LanzarAdvertencia("No se han encontrado resultados.");
             }
             else
@@ -139,13 +144,17 @@ namespace Practica_LINQ_Xamarin.Vistas
                 lstContactos.ItemsSource = contactosMostrar;
             }
         }
-
+        /// <summary>
+        /// Muestra el contacto introducido por parametro en el ListView
+        /// </summary>
+        /// <param name="contacto">El contacto a mostrar</param>
         void mostrarResultados(Contacto contacto)
         {
             List<Contacto> lista = new List<Contacto>();
 
             if (contacto == null)
             {
+                lstContactos.ItemsSource = null;
                 LanzarAdvertencia("No se han encontrado resultados.");
             }
             else
@@ -155,94 +164,132 @@ namespace Practica_LINQ_Xamarin.Vistas
             }
         }
 
+        /// <summary>
+        /// Comprueba que el campo Nombre esta rellenado correctamente o no.
+        /// </summary>
+        /// <returns>True si el campo no esta vacio. False si esta vacio.</returns>
         private bool DatosRellenados()
         {
-            return !txtNombre.Text.Equals("") && !txtEdad.Text.Equals("");
+            return !txtNombre.Text.Equals("");
+        }
+
+        /// <summary>
+        /// Comprueba que el campo Edad esta rellenado correctamente o no.
+        /// </summary>
+        /// <returns>True si hay introducido un numero. False si esta vacio o no es un numero.</returns>
+        private bool ControlNumerico()
+        {
+            return Int32.TryParse(txtEdad.Text, out int edad);
         }
 
         #endregion Utilidades
 
         #region Metodos Busqueda
 
+        /// <summary>
+        /// Fitra por nombre
+        /// </summary>
         private void BuscarWhere()
         {
             if (DatosRellenados())
             {
-                mostrarResultados(contactos.Where(contacto => contacto.Nombre.Contains(txtNombre.Text)).ToList());
+                mostrarResultados(contactos.Where(contacto => contacto.Nombre.ToLower().Contains(txtNombre.Text.ToLower())).ToList());
             }
             else
             {
-                LanzarAdvertencia("Rellena primero los campos.");
+                LanzarAdvertencia("Rellena primero el campo Nombre.");
             }
 
         }
+
+        /// <summary>
+        /// Filtra por edad
+        /// </summary>
         private void BuscarFirstOrDefault()
         {
-            if (DatosRellenados())
+            if (ControlNumerico())
             {
-                mostrarResultados(contactos.Where(contacto => contacto.Nombre.Contains(txtNombre.Text)).FirstOrDefault(contacto => contacto.Edad == txtEdad.Text));
+                mostrarResultados(contactos.FirstOrDefault(contacto => contacto.Edad == txtEdad.Text));
             }
             else
             {
-                LanzarAdvertencia("Rellena primero los campos.");
+                LanzarAdvertencia("Rellena primero el campo Edad.");
             }
         }
 
+        /// <summary>
+        /// Filtra por nombre y por edad
+        /// </summary>
         private void BuscarSingleOrDefault()
         {
-            if (DatosRellenados())
+            if (DatosRellenados() && ControlNumerico())
             {
-                mostrarResultados(contactos.Where(contacto => contacto.Nombre.Contains(txtNombre.Text)).SingleOrDefault(contacto => contacto.Edad == txtEdad.Text));
+                mostrarResultados(contactos.Where(contacto => contacto.Nombre.ToLower().Contains(txtNombre.Text.ToLower())).SingleOrDefault(contacto => contacto.Edad == txtEdad.Text));
             }
             else
             {
-                LanzarAdvertencia("Rellena primero los campos.");
+                LanzarAdvertencia("Rellena primero los campos correctamente.");
             }
         }
 
+        /// <summary>
+        /// Filtra por edad
+        /// </summary>
         private void BuscarLastOrDefault()
         {
-            if (DatosRellenados())
+            if (ControlNumerico())
             {
-                mostrarResultados(contactos.Where(contacto => contacto.Nombre.Contains(txtNombre.Text)).LastOrDefault(contacto => contacto.Edad == txtEdad.Text));
+                mostrarResultados(contactos.LastOrDefault(contacto => contacto.Edad == txtEdad.Text));
             }
             else
             {
-                LanzarAdvertencia("Rellena primero los campos.");
+                LanzarAdvertencia("Rellena primero el campo Edad.");
             }
         }
 
+        /// <summary>
+        /// Ordena por orden alfabetico
+        /// </summary>
         private void OrdenarOrderBy()
         {
-            mostrarResultados(contactos.OrderBy(contacto => contacto.Nombre).ToList());
+            mostrarResultados(contactos.OrderBy(contacto => contacto.Nombre.ToLower()).ToList());
         }
 
+        /// <summary>
+        /// Ordena por orden alfabetico inverso
+        /// </summary>
         private void OrdenarOrderByDescending()
         {
-            mostrarResultados(contactos.OrderByDescending(contacto => contacto.Nombre).ToList());
+            mostrarResultados(contactos.OrderByDescending(contacto => contacto.Nombre.ToLower()).ToList());
         }
 
+        /// <summary>
+        /// Muestra los resultados a partir de la primera coincidencia que encuentra que sea mayor que la edad de txtEdad
+        /// </summary>
         private void MostrarSkip()
         {
-            if (DatosRellenados())
+            if (ControlNumerico())
             {
                 mostrarResultados(contactos.SkipWhile(contacto => Int32.Parse(contacto.Edad) > Int32.Parse(txtEdad.Text)).ToList());
             }
             else
             {
-                LanzarAdvertencia("Rellena primero los campos.");
+                LanzarAdvertencia("Rellena primero el campo de Edad.");
             }
         }
 
+        /// <summary>
+        /// Muestra los resultados hasta la primera coincidencia que encuentra que sea mayor que la edad de txtEdad
+        /// </summary>
         private void MostrarTake()
         {
-            if (DatosRellenados())
+            if (ControlNumerico())
             {
                 mostrarResultados(contactos.TakeWhile(contacto => Int32.Parse(contacto.Edad) > Int32.Parse(txtEdad.Text)).ToList());
             }
             else
             {
-                LanzarAdvertencia("Rellena primero los campos.");
+                LanzarAdvertencia("Rellena primero el campo de Edad");
             }
         }
 
